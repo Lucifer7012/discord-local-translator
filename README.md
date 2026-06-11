@@ -50,6 +50,9 @@ Optional:
 AI_API_KEY=your_api_key
 AI_API_BASE_URL=https://api.openai.com/v1
 AI_MODEL=gpt-4.1-mini
+ACCURATE_TRANSLATION_MODEL=gpt-5.5
+FAST_TRANSLATION_MODEL=gpt-5.4-mini
+TRANSLATION_MODEL_MODE=accurate
 ```
 
 The app will use:
@@ -64,6 +67,15 @@ The app will use:
 - `Ctrl+Alt+T`: manual backup translation for the current selected text
 - `F8`: open the reply box, translate your Chinese reply, and prepare it for Discord
 - `Ctrl+Alt+O`: show or hide the main window
+
+## Translation Modes
+
+The main window now supports two built-in translation modes:
+
+- `准确模式`: prefers translation quality and uses the accurate model
+- `极速模式`: prefers lower latency and uses the fast model
+
+By default, the mode labels show the actual model names currently configured.
 
 ## Daily Usage
 

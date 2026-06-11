@@ -4,6 +4,13 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
 ## 2026-06-11
 
+### Accurate/fast translation mode switch
+
+- Added a runtime translation mode switch to the main window.
+- `准确模式` now targets the accurate model slot, currently intended for `gpt-5.5`.
+- `极速模式` now targets the fast model slot, currently intended for `gpt-5.4-mini`.
+- Added optional env keys so the accurate model, fast model, and startup mode can be changed without editing code.
+
 ### Repository hardening for GitHub and multi-computer use
 
 - Switched the default config path from a machine-specific absolute path to the repo-local `.env`.

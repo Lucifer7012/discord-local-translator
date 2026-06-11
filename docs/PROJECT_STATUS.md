@@ -21,6 +21,7 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 - Auto-translate copied Discord messages to Chinese
 - Detect source language and show it in the popup
 - Translate Chinese replies through the `F8` reply window
+- Switch between `准确模式` and `极速模式` in the main window
 - Auto-copy translated output
 - Floating popup with scroll support for long content
 - Popup title dragging for repositioning
@@ -36,6 +37,10 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 - Priority 1: `DISCORD_TRANSLATOR_ENV`
 - Priority 2: local repo `.env`
 - Priority 3: legacy `chaoshan-translator` env path as fallback
+- Optional model-specific settings:
+  - `ACCURATE_TRANSLATION_MODEL`
+  - `FAST_TRANSLATION_MODEL`
+  - `TRANSLATION_MODEL_MODE`
 
 ## Important files
 

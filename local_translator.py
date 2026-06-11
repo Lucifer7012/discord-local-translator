@@ -17,6 +17,10 @@ APP_TITLE = "Discord 本地翻译助手"
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_ENV_PATH = SCRIPT_DIR / ".env"
 LEGACY_ENV_PATH = Path(r"C:\Users\OgCloud\Documents\chaoshan-translator\.env")
+MODEL_MODE_ACCURATE = "accurate"
+MODEL_MODE_FAST = "fast"
+DEFAULT_ACCURATE_MODEL = "gpt-5.5"
+DEFAULT_FAST_MODEL = "gpt-5.4-mini"
 
 MOD_ALT = 0x0001
 MOD_CONTROL = 0x0002
@@ -279,13 +283,37 @@ class TranslatorClient:
             or file_env.get("AI_API_KEY")
             or ""
         )
-        self.model = (
+        self.default_model = (
             os.environ.get("OPENAI_MODEL")
             or os.environ.get("AI_MODEL")
             or file_env.get("OPENAI_MODEL")
             or file_env.get("AI_MODEL")
-            or "gpt-4.1-mini"
+            or DEFAULT_ACCURATE_MODEL
         )
+        self.accurate_model = (
+            os.environ.get("ACCURATE_TRANSLATION_MODEL")
+            or file_env.get("ACCURATE_TRANSLATION_MODEL")
+            or self.default_model
+            or DEFAULT_ACCURATE_MODEL
+        )
+        self.fast_model = (
+            os.environ.get("FAST_TRANSLATION_MODEL")
+            or file_env.get("FAST_TRANSLATION_MODEL")
+            or DEFAULT_FAST_MODEL
+        )
+        initial_mode = (
+            os.environ.get("TRANSLATION_MODEL_MODE")
+            or file_env.get("TRANSLATION_MODEL_MODE")
+            or ""
+        ).strip().lower()
+        if initial_mode not in {MODEL_MODE_ACCURATE, MODEL_MODE_FAST}:
+            initial_mode = (
+                MODEL_MODE_FAST
+                if self.default_model == self.fast_model
+                else MODEL_MODE_ACCURATE
+            )
+        self.model_mode = initial_mode
+        self.model = self.resolve_model_for_mode(self.model_mode)
         base_url = (
             os.environ.get("OPENAI_BASE_URL")
             or os.environ.get("AI_API_BASE_URL")
@@ -298,6 +326,17 @@ class TranslatorClient:
     @property
     def configured(self) -> bool:
         return bool(self.api_key)
+
+    def resolve_model_for_mode(self, mode: str) -> str:
+        if mode == MODEL_MODE_FAST:
+            return self.fast_model
+        return self.accurate_model
+
+    def set_model_mode(self, mode: str) -> None:
+        self.model_mode = (
+            mode if mode in {MODEL_MODE_ACCURATE, MODEL_MODE_FAST} else MODEL_MODE_ACCURATE
+        )
+        self.model = self.resolve_model_for_mode(self.model_mode)
 
     def chat(self, messages: list[dict[str, str]], timeout: int = 90) -> str:
         if not self.api_key:
@@ -512,6 +551,7 @@ class TranslatorApp:
         self.last_auto_clipboard_text = ""
         self.reply_paste_hwnd = 0
         self.reply_prompt: Toplevel | None = None
+        self.model_mode_var = StringVar()
 
         self.status_var = StringVar()
         self.detected_var = StringVar(value="尚未检测")
@@ -520,6 +560,7 @@ class TranslatorApp:
         self.auto_clipboard_var = BooleanVar(value=True)
 
         self._build_ui()
+        self.model_mode_var.set(self.format_model_mode_label(self.client.model_mode))
         self._set_initial_status()
         self._start_hotkey_listener()
         self._poll_hotkey_events()
@@ -559,6 +600,19 @@ class TranslatorApp:
             width=36,
         )
         target_box.pack(side=LEFT, padx=(4, 14))
+        ttk.Label(config, text="模式:").pack(side=LEFT)
+        self.model_mode_box = ttk.Combobox(
+            config,
+            textvariable=self.model_mode_var,
+            values=[
+                self.format_model_mode_label(MODEL_MODE_ACCURATE),
+                self.format_model_mode_label(MODEL_MODE_FAST),
+            ],
+            state="readonly",
+            width=24,
+        )
+        self.model_mode_box.pack(side=LEFT, padx=(4, 14))
+        self.model_mode_box.bind("<<ComboboxSelected>>", self.on_model_mode_changed)
         ttk.Checkbutton(config, text="翻译后自动复制", variable=self.auto_copy_var).pack(
             side=LEFT
         )
@@ -618,6 +672,23 @@ class TranslatorApp:
             self.status_var.set(
                 f"未找到 OPENAI_API_KEY。当前会启动，但翻译前需要配置：{self.client.env_path}"
             )
+
+    def format_model_mode_label(self, mode: str) -> str:
+        if mode == MODEL_MODE_FAST:
+            return f"极速模式 ({self.client.fast_model})"
+        return f"准确模式 ({self.client.accurate_model})"
+
+    def on_model_mode_changed(self, _event=None) -> None:
+        selected = self.model_mode_var.get().strip()
+        target_mode = (
+            MODEL_MODE_FAST
+            if selected == self.format_model_mode_label(MODEL_MODE_FAST)
+            else MODEL_MODE_ACCURATE
+        )
+        self.client.set_model_mode(target_mode)
+        self.model_mode_var.set(self.format_model_mode_label(self.client.model_mode))
+        if self.client.configured:
+            self.status_var.set(f"已切换翻译模式，当前模型：{self.client.model}")
 
     def _start_hotkey_listener(self) -> None:
         self.hotkey_listener = HotkeyListener(self.hotkey_events)

@@ -11,6 +11,12 @@ Rules:
 
 ## 2026-06-11
 
+### Accurate and fast translation modes
+
+- Added a visible translation mode switch in the main window.
+- Added `准确模式` and `极速模式` so the tool can switch between `gpt-5.5` and `gpt-5.4-mini`.
+- Added optional env settings for accurate model, fast model, and startup mode.
+
 ### GitHub and multi-computer preparation
 
 - Made the project self-contained for GitHub and cross-computer usage.

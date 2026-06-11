@@ -42,6 +42,16 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
   - `FAST_TRANSLATION_MODEL`
   - `TRANSLATION_MODEL_MODE`
 
+## Current recommended local config
+
+```env
+OPENAI_BASE_URL=http://43.166.202.16:3000/v1
+OPENAI_MODEL=gpt-5.5
+ACCURATE_TRANSLATION_MODEL=gpt-5.5
+FAST_TRANSLATION_MODEL=gpt-5.4-mini
+TRANSLATION_MODEL_MODE=accurate
+```
+
 ## Important files
 
 - `local_translator.py`: main application

@@ -38,14 +38,18 @@ Then edit `.env` and fill these values:
 
 ```env
 OPENAI_API_KEY=your_api_key
-OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4.1-mini
+OPENAI_BASE_URL=http://43.166.202.16:3000/v1
+OPENAI_MODEL=gpt-5.5
+ACCURATE_TRANSLATION_MODEL=gpt-5.5
+FAST_TRANSLATION_MODEL=gpt-5.4-mini
+TRANSLATION_MODEL_MODE=accurate
 ```
 
 Tip:
 
 - Use a lighter/faster model if response speed matters more than nuance.
 - Keep `.env` local only. Do not upload it.
+- If you do not use the same custom gateway, replace `OPENAI_BASE_URL` with your own compatible endpoint.
 
 ## 4. Start the translator
 

@@ -11,6 +11,10 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 - `极速模式` now targets the fast model slot, currently intended for `gpt-5.4-mini`.
 - Added optional env keys so the accurate model, fast model, and startup mode can be changed without editing code.
 
+### Config documentation sync
+
+- Synced the setup docs so the full six-line `.env` structure is documented consistently.
+
 ### Repository hardening for GitHub and multi-computer use
 
 - Switched the default config path from a machine-specific absolute path to the repo-local `.env`.

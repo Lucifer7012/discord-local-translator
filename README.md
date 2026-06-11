@@ -82,7 +82,7 @@ The app will use:
 
 ## Home PC Setup
 
-Detailed setup steps for another computer are in [docs/HOME_PC_SETUP.md](C:/Users/OgCloud/Documents/Codex/2026-05-13/discord/docs/HOME_PC_SETUP.md).
+Detailed setup steps for another computer are in [docs/HOME_PC_SETUP.md](docs/HOME_PC_SETUP.md).
 
 ## Notes
 

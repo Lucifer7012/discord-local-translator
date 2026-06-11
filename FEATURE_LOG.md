@@ -4,6 +4,14 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
 ## 2026-06-11
 
+### Popup usability and presentation refresh
+
+- Restyled the floating translation popup with a cleaner dark card layout, improved spacing, and more readable typography.
+- Added popup controls for scaling the overlay text size up or down.
+- Added a pin mode so the popup can stay on screen without auto-closing while remaining topmost.
+- Changed popup placement to reuse the cursor position captured at copy time so the result stays closer to the source message.
+- Replaced the permanent duplicate-text suppression with a short cooldown so the same copied line can be translated again after a few seconds.
+
 ### Accurate/fast translation mode switch
 
 - Added a runtime translation mode switch to the main window.

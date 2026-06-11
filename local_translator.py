@@ -48,6 +48,7 @@ HOTKEYS = {
 MAX_INPUT_CHARS = 8000
 CHAT_MAX_TOKENS = 120
 CLIPBOARD_POLL_INTERVAL_MS = 150
+AUTO_TRANSLATE_REPEAT_COOLDOWN_SECONDS = 6
 
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
@@ -212,7 +213,7 @@ def is_key_down(vk: int) -> bool:
 
 def wait_for_hotkey_release(timeout: float = 1.0) -> None:
     deadline = time.time() + timeout
-    keys = [VK_CONTROL, VK_MENU, VK_SPACE, VK_F8, ord("T")]
+    keys = [VK_CONTROL, VK_MENU, VK_SPACE, VK_F8, ord("T"), ord("O")]
     while time.time() < deadline:
         if not any(is_key_down(vk) for vk in keys):
             return
@@ -417,51 +418,77 @@ class FloatingTranslation:
         self.root = root
         self.window: Toplevel | None = None
         self.body_text: Text | None = None
+        self.title_label: Label | None = None
+        self.pin_button: Label | None = None
+        self.close_button: Label | None = None
+        self.scale_level = 0
+        self.pinned = False
+        self.close_after_id: str | None = None
+        self.keep_on_top_after_id: str | None = None
+        self.base_width = 560
+        self.base_min_height = 100
+        self.base_max_height = 360
+        self.min_scale_level = -3
+        self.max_scale_level = 5
+        self.window_bg = "#0f1117"
+        self.panel_bg = "#171a21"
+        self.body_bg = "#1c212b"
+        self.header_border = "#272d38"
+        self.title_fg = "#dbe7ff"
+        self.subtle_fg = "#93a4bf"
+        self.body_fg = "#f4f7fb"
+        self.button_bg = "#222734"
+        self.button_hover_bg = "#2d3443"
+        self.pin_active_bg = "#295ec7"
+        self.close_hover_bg = "#7f1d1d"
 
-    def show(self, title: str, body: str, duration_ms: int = 14000) -> None:
+    def show(self, title: str, body: str, duration_ms: int = 14000, anchor_pos: tuple[int, int] | None = None) -> None:
         self.close()
 
-        x, y = get_cursor_position()
+        x, y = anchor_pos or get_cursor_position()
         screen_width = self.root.winfo_screenwidth()
-        width = 560
+        width = self._scaled_width()
         xpos = min(max(12, x + 18), max(12, screen_width - width - 18))
         ypos = max(24, y + 24)
 
         window = Toplevel(self.root)
         window.overrideredirect(True)
-        window.attributes("-topmost", True)
-        window.configure(bg="#202225")
+        window.configure(bg=self.window_bg)
 
-        container = Frame(window, bg="#202225", padx=12, pady=10)
-        container.pack(fill=BOTH, expand=True)
+        container = Frame(window, bg=self.panel_bg, padx=14, pady=12, highlightthickness=1, highlightbackground=self.header_border)
+        container.pack(fill=BOTH, expand=True, padx=1, pady=1)
 
-        header = Frame(container, bg="#202225")
-        header.pack(fill=X)
-        Label(
+        header = Frame(container, bg=self.panel_bg)
+        header.pack(fill=X, pady=(0, 8))
+        title_label = Label(
             header,
             text=title,
-            bg="#202225",
-            fg="#b9bbbe",
-            font=("Microsoft YaHei UI", 9, "bold"),
+            bg=self.panel_bg,
+            fg=self.title_fg,
+            font=("Microsoft YaHei UI", self._title_font_size(), "bold"),
             anchor="w",
-        ).pack(side=LEFT, fill=X, expand=True)
-        Label(
-            header,
-            text="×",
-            bg="#202225",
-            fg="#dcddde",
-            font=("Microsoft YaHei UI", 11, "bold"),
-            cursor="hand2",
-        ).pack(side=RIGHT)
-        header.winfo_children()[-1].bind("<Button-1>", lambda _event: self.close())
+        )
+        title_label.pack(side=LEFT, fill=X, expand=True)
+        self.title_label = title_label
+
+        close_button = self._create_header_button(header, "×", lambda _event: self.close(), role="close")
+        close_button.pack(side=RIGHT, padx=(8, 0))
+        pin_button = self._create_header_button(header, self._pin_button_text(), self.toggle_pin, role="pin")
+        pin_button.pack(side=RIGHT, padx=(8, 0))
+        enlarge_button = self._create_header_button(header, "A+", self.increase_scale)
+        enlarge_button.pack(side=RIGHT, padx=(8, 0))
+        shrink_button = self._create_header_button(header, "A-", self.decrease_scale)
+        shrink_button.pack(side=RIGHT, padx=(8, 0))
+        self.pin_button = pin_button
+        self.close_button = close_button
+
         header.bind("<Button-1>", self._start_move)
         header.bind("<B1-Motion>", self._move)
-        title_widget = header.winfo_children()[0]
-        title_widget.configure(cursor="fleur")
-        title_widget.bind("<Button-1>", self._start_move)
-        title_widget.bind("<B1-Motion>", self._move)
+        title_label.configure(cursor="fleur")
+        title_label.bind("<Button-1>", self._start_move)
+        title_label.bind("<B1-Motion>", self._move)
 
-        body_frame = Frame(container, bg="#202225")
+        body_frame = Frame(container, bg=self.body_bg)
         body_frame.pack(fill=BOTH, expand=True, pady=(7, 0))
 
         scrollbar = ttk.Scrollbar(body_frame, orient="vertical")
@@ -469,15 +496,19 @@ class FloatingTranslation:
 
         body_text = Text(
             body_frame,
-            bg="#202225",
-            fg="#ffffff",
+            bg=self.body_bg,
+            fg=self.body_fg,
             wrap="word",
-            font=("Microsoft YaHei UI", 10),
+            font=("Microsoft YaHei UI", self._body_font_size()),
             relief="flat",
             borderwidth=0,
             highlightthickness=0,
-            padx=0,
-            pady=0,
+            padx=6,
+            pady=6,
+            insertbackground=self.body_fg,
+            spacing1=2,
+            spacing2=5,
+            spacing3=2,
             yscrollcommand=scrollbar.set,
         )
         body_text.pack(side=LEFT, fill=BOTH, expand=True)
@@ -489,15 +520,124 @@ class FloatingTranslation:
         body_text.bind("<Button-5>", self._on_mousewheel)
         self.body_text = body_text
 
+        self.window = window
         window.bind("<Escape>", lambda _event: self.close())
         window.geometry(f"{width}x120+{xpos}+{ypos}")
         window.update_idletasks()
-        height = min(max(window.winfo_reqheight(), 100), 360)
+        height = min(max(window.winfo_reqheight(), self._min_height()), self._max_height())
         window.geometry(f"{width}x{height}+{xpos}+{ypos}")
+        self._apply_window_behaviors()
         display_duration_ms = max(duration_ms, min(30000, 12000 + len(body) * 18))
-        window.after(display_duration_ms, lambda expected=window: self.close(expected))
+        self._schedule_close(display_duration_ms)
 
-        self.window = window
+    def _create_header_button(self, parent: Frame, text: str, handler, role: str = "default"):
+        button = Label(
+            parent,
+            text=text,
+            bg=self.button_bg,
+            fg=self.body_fg,
+            font=("Segoe UI", 9, "bold"),
+            cursor="hand2",
+            width=4,
+            padx=6,
+            pady=3,
+        )
+        button._role = role
+        button.bind("<Button-1>", handler)
+        button.bind("<Enter>", lambda _event, widget=button: self._set_button_hover(widget, True))
+        button.bind("<Leave>", lambda _event, widget=button: self._set_button_hover(widget, False))
+        return button
+
+    def _scaled_width(self) -> int:
+        return max(360, self.base_width + self.scale_level * 80)
+
+    def _min_height(self) -> int:
+        return max(90, self.base_min_height + self.scale_level * 16)
+
+    def _max_height(self) -> int:
+        return max(220, self.base_max_height + self.scale_level * 70)
+
+    def _title_font_size(self) -> int:
+        return max(9, 10 + self.scale_level)
+
+    def _body_font_size(self) -> int:
+        return max(10, 11 + self.scale_level)
+
+    def _pin_button_text(self) -> str:
+        return "PIN" if self.pinned else "TOP"
+
+    def _set_button_hover(self, button: Label, hovered: bool) -> None:
+        role = getattr(button, "_role", "default")
+        if role == "close":
+            button.configure(bg=self.close_hover_bg if hovered else self.button_bg)
+            return
+        if role == "pin" and self.pinned:
+            button.configure(bg="#3b82f6" if hovered else self.pin_active_bg)
+            return
+        button.configure(bg=self.button_hover_bg if hovered else self.button_bg)
+
+    def _schedule_close(self, duration_ms: int) -> None:
+        if not self.window:
+            return
+        if self.close_after_id:
+            self.window.after_cancel(self.close_after_id)
+            self.close_after_id = None
+        if self.pinned:
+            return
+        self.close_after_id = self.window.after(
+            duration_ms, lambda expected=self.window: self.close(expected)
+        )
+
+    def _ensure_on_top(self) -> None:
+        if not self.window or not self.pinned:
+            return
+        self.window.attributes("-topmost", True)
+        self.window.lift()
+        self.keep_on_top_after_id = self.window.after(1200, self._ensure_on_top)
+
+    def _apply_window_behaviors(self) -> None:
+        if not self.window:
+            return
+        self.window.attributes("-topmost", True)
+        self.window.lift()
+        if self.keep_on_top_after_id:
+            self.window.after_cancel(self.keep_on_top_after_id)
+            self.keep_on_top_after_id = None
+        if self.pinned:
+            self._ensure_on_top()
+        if self.pin_button:
+            self.pin_button.configure(text=self._pin_button_text())
+            self._set_button_hover(self.pin_button, False)
+        if self.close_button:
+            self._set_button_hover(self.close_button, False)
+
+    def _refresh_window_scale(self) -> None:
+        if not self.window or not self.body_text:
+            return
+        self.body_text.configure(font=("Microsoft YaHei UI", self._body_font_size()))
+        if self.title_label:
+            self.title_label.configure(font=("Microsoft YaHei UI", self._title_font_size(), "bold"))
+        self.window.update_idletasks()
+        width = self._scaled_width()
+        height = min(max(self.window.winfo_reqheight(), self._min_height()), self._max_height())
+        self.window.geometry(f"{width}x{height}+{self.window.winfo_x()}+{self.window.winfo_y()}")
+
+    def increase_scale(self, _event=None) -> None:
+        if self.scale_level >= self.max_scale_level:
+            return
+        self.scale_level += 1
+        self._refresh_window_scale()
+
+    def decrease_scale(self, _event=None) -> None:
+        if self.scale_level <= self.min_scale_level:
+            return
+        self.scale_level -= 1
+        self._refresh_window_scale()
+
+    def toggle_pin(self, _event=None) -> None:
+        self.pinned = not self.pinned
+        self._apply_window_behaviors()
+        self._schedule_close(14000)
 
     def _on_mousewheel(self, event):
         if not self.body_text:
@@ -526,9 +666,18 @@ class FloatingTranslation:
 
     def close(self, expected: Toplevel | None = None) -> None:
         if self.window and (expected is None or expected is self.window):
+            if self.close_after_id:
+                self.window.after_cancel(self.close_after_id)
+                self.close_after_id = None
+            if self.keep_on_top_after_id:
+                self.window.after_cancel(self.keep_on_top_after_id)
+                self.keep_on_top_after_id = None
             self.window.destroy()
             self.window = None
             self.body_text = None
+            self.title_label = None
+            self.pin_button = None
+            self.close_button = None
 
 
 class TranslatorApp:
@@ -549,6 +698,8 @@ class TranslatorApp:
         self.last_app_clipboard_sequence = 0
         self.last_seen_clipboard_sequence = int(user32.GetClipboardSequenceNumber())
         self.last_auto_clipboard_text = ""
+        self.last_auto_clipboard_at = 0.0
+        self.last_translation_anchor: tuple[int, int] | None = None
         self.reply_paste_hwnd = 0
         self.reply_prompt: Toplevel | None = None
         self.model_mode_var = StringVar()
@@ -716,16 +867,22 @@ class TranslatorApp:
             self.last_seen_clipboard_sequence = current_sequence
             if self.auto_clipboard_var.get() and not self.busy and is_discord_foreground():
                 text = self.normalize_input_text(self.read_clipboard())
+                within_repeat_cooldown = (
+                    text == self.last_auto_clipboard_text
+                    and (time.time() - self.last_auto_clipboard_at) < AUTO_TRANSLATE_REPEAT_COOLDOWN_SECONDS
+                )
                 should_translate = (
                     text
                     and text != self.last_app_clipboard_text
-                    and text != self.last_auto_clipboard_text
+                    and not within_repeat_cooldown
                     and not contains_cjk(text)
                     and not is_nontranslatable_code_block(text)
                     and len(text) >= 3
                 )
                 if should_translate:
                     self.last_auto_clipboard_text = text
+                    self.last_auto_clipboard_at = time.time()
+                    self.last_translation_anchor = get_cursor_position()
                     self.translate_text_to_chinese(text, show_main=False)
         self.root.after(CLIPBOARD_POLL_INTERVAL_MS, self._poll_clipboard)
 
@@ -944,6 +1101,7 @@ class TranslatorApp:
     def translate_selection_to_chinese(self, show_main: bool = False, source_hwnd: int = 0) -> None:
         if self.busy:
             return
+        self.last_translation_anchor = get_cursor_position()
 
         text = self.grab_clipboard_text()
         if not text:
@@ -974,6 +1132,7 @@ class TranslatorApp:
     ) -> None:
         if self.busy:
             return
+        self.last_translation_anchor = get_cursor_position()
         target = self.resolve_reply_target()
         self._start_worker(
             f"正在翻译成 {target}...",
@@ -993,6 +1152,7 @@ class TranslatorApp:
     ) -> None:
         if self.busy:
             return
+        self.last_translation_anchor = get_cursor_position()
 
         text = self.grab_clipboard_text() if not paste_result else self.grab_focused_draft_text(source_hwnd)
         if not text:
@@ -1042,6 +1202,7 @@ class TranslatorApp:
         paste_result: bool,
     ) -> None:
         self.busy = True
+        anchor_pos = self.last_translation_anchor
         self.status_var.set(status)
         self.set_text_widget(self.original_text, text)
         self.set_text_widget(self.result_text, "")
@@ -1049,7 +1210,7 @@ class TranslatorApp:
             self.show_window()
         elif not paste_result:
             self.hide_window()
-            self.floating.show("翻译中", status, duration_ms=6000)
+            self.floating.show("翻译中", status, duration_ms=6000, anchor_pos=anchor_pos)
         else:
             self.hide_window()
 
@@ -1078,6 +1239,7 @@ class TranslatorApp:
             self.root.after(0, lambda: self._finish_error(exc))
 
     def _finish_to_chinese(self, result: dict, show_main: bool) -> None:
+        anchor_pos = self.last_translation_anchor
         source_zh = str(result.get("source_language_zh") or "未知语言")
         source_en = str(result.get("source_language_en") or "Unknown")
         translation = str(result.get("translation_zh") or "").strip()
@@ -1097,11 +1259,12 @@ class TranslatorApp:
         else:
             self.status_var.set("已翻译成中文。")
         self.busy = False
-        self.floating.show(f"{source_zh} ({source_en}) -> 中文", translation)
+        self.floating.show(f"{source_zh} ({source_en}) -> 中文", translation, anchor_pos=anchor_pos)
         if show_main:
             self.show_window()
 
     def _finish_reply(self, result: dict, show_main: bool, paste_result: bool, source_hwnd: int = 0) -> None:
+        anchor_pos = self.last_translation_anchor
         target_zh = str(result.get("target_language_zh") or "目标语言")
         target_en = str(result.get("target_language_en") or self.resolve_reply_target())
         translation = str(result.get("translation") or "").strip()
@@ -1127,9 +1290,10 @@ class TranslatorApp:
                 f"已翻译成 {target_en}",
                 "已复制并尝试粘贴到 Discord 输入框。",
                 duration_ms=3000,
+                anchor_pos=anchor_pos,
             )
         else:
-            self.floating.show(f"已翻译成 {target_en}", translation, duration_ms=8000)
+            self.floating.show(f"已翻译成 {target_en}", translation, duration_ms=8000, anchor_pos=anchor_pos)
         if show_main:
             self.show_window()
 

@@ -19,6 +19,7 @@ Suggested opening prompt:
 ## Current handoff summary
 
 - The project is now prepared for GitHub sync and cross-computer use.
+- GitHub repo: `https://github.com/Lucifer7012/discord-local-translator`
 - The repo should use a local `.env` instead of relying on another project's config file.
 - Popup scrolling, dragging, numeric skip rules, and translation speed tuning were already added.
 - When changing behavior, remember to update the project docs and the desktop worklog.

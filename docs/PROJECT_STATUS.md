@@ -8,6 +8,10 @@ Local path:
 
 - `C:\Users\OgCloud\Documents\Codex\2026-05-13\discord`
 
+GitHub:
+
+- `https://github.com/Lucifer7012/discord-local-translator`
+
 ## Current purpose
 
 This is a Windows desktop helper for Discord. It helps the user quickly translate copied foreign-language chat messages into Simplified Chinese and translate Chinese replies back into the conversation language.

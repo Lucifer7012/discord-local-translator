@@ -14,6 +14,7 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 ### Config documentation sync
 
 - Synced the setup docs so the full six-line `.env` structure is documented consistently.
+- Updated `.env.example` to use the same custom gateway URL as the current local configuration.
 
 ### Repository hardening for GitHub and multi-computer use
 

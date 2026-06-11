@@ -20,6 +20,7 @@ Rules:
 ### Accurate and fast translation docs sync
 
 - Synced README and setup docs to the current full `.env` structure and custom gateway example.
+- Synced `.env.example` to the same custom gateway base URL so the repo template matches the current local setup.
 
 ### GitHub and multi-computer preparation
 

@@ -49,6 +49,8 @@ MAX_INPUT_CHARS = 8000
 CHAT_MAX_TOKENS = 120
 CLIPBOARD_POLL_INTERVAL_MS = 150
 AUTO_TRANSLATE_REPEAT_COOLDOWN_SECONDS = 6
+POPUP_ABOVE_GAP_PX = 72
+PROMPT_ABOVE_GAP_PX = 42
 
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
@@ -444,12 +446,13 @@ class FloatingTranslation:
 
     def show(self, title: str, body: str, duration_ms: int = 14000, anchor_pos: tuple[int, int] | None = None) -> None:
         self.close()
+        self.scale_level = 0
 
         x, y = anchor_pos or get_cursor_position()
         screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
         width = self._scaled_width()
-        xpos = min(max(12, x + 18), max(12, screen_width - width - 18))
-        ypos = max(24, y + 24)
+        xpos = min(max(12, x - width // 2), max(12, screen_width - width - 12))
 
         window = Toplevel(self.root)
         window.overrideredirect(True)
@@ -522,9 +525,10 @@ class FloatingTranslation:
 
         self.window = window
         window.bind("<Escape>", lambda _event: self.close())
-        window.geometry(f"{width}x120+{xpos}+{ypos}")
+        window.geometry(f"{width}x120+{xpos}+24")
         window.update_idletasks()
         height = min(max(window.winfo_reqheight(), self._min_height()), self._max_height())
+        ypos = max(24, y - height - POPUP_ABOVE_GAP_PX)
         window.geometry(f"{width}x{height}+{xpos}+{ypos}")
         self._apply_window_behaviors()
         display_duration_ms = max(duration_ms, min(30000, 12000 + len(body) * 18))
@@ -1026,8 +1030,9 @@ class TranslatorApp:
         x, y = get_cursor_position()
         width = 560
         screen_width = self.root.winfo_screenwidth()
-        xpos = min(max(12, x + 18), max(12, screen_width - width - 18))
-        ypos = max(24, y + 24)
+        height = 170
+        xpos = min(max(12, x - width // 2), max(12, screen_width - width - 12))
+        ypos = max(24, y - height - PROMPT_ABOVE_GAP_PX)
 
         prompt = Toplevel(self.root)
         prompt.title("回复翻译")

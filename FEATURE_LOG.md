@@ -2,6 +2,15 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-06-14
+
+### Popup placement tuning and local startup setup
+
+- Tuned the translation popup so it prefers showing above the captured copy anchor instead of dropping below the source line.
+- Reset popup scaling to the default size whenever a new translation popup opens, so previous manual zoom does not affect the next message.
+- Adjusted the reply prompt to prefer showing above the mouse cursor as well.
+- Enabled Windows auto-start on the current machine by placing a shortcut to `start_translator.bat` in the user's Startup folder.
+
 ## 2026-06-11
 
 ### Popup usability and presentation refresh

@@ -5,6 +5,7 @@ This file is the quick resume entry for future Codex sessions or another compute
 ## Read first in a new session
 
 - `docs/HANDOFF.md`
+- `docs/MACHINE_NOTES.md`
 - `docs/PROJECT_STATUS.md`
 - `docs/CHANGELOG.md`
 - `FEATURE_LOG.md`
@@ -21,6 +22,7 @@ Suggested opening prompt:
 - The project is now prepared for GitHub sync and cross-computer use.
 - GitHub repo: `https://github.com/Lucifer7012/discord-local-translator`
 - The repo should use a local `.env` instead of relying on another project's config file.
+- Machine-specific differences should be recorded in `docs/MACHINE_NOTES.md`.
 - Popup scrolling, dragging, numeric skip rules, and translation speed tuning were already added.
 - When changing behavior, remember to update the project docs and the desktop worklog.
 

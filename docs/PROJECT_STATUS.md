@@ -59,6 +59,7 @@ TRANSLATION_MODEL_MODE=accurate
 - `start_translator_debug.bat`: debug launcher
 - `.env.example`: configuration template
 - `docs/HOME_PC_SETUP.md`: another-computer setup guide
+- `docs/MACHINE_NOTES.md`: company PC vs home PC setup differences
 
 ## Known limitations
 
@@ -73,3 +74,7 @@ TRANSLATION_MODEL_MODE=accurate
 - Keep using a lightweight model for faster translation
 - If another computer will use the same repo, clone it and create a separate `.env`
 - If startup convenience is needed on the home PC, create a shortcut to `start_translator.bat` in `shell:startup`
+
+## Machine-specific note
+
+- This project now tracks machine differences separately in `docs/MACHINE_NOTES.md`.

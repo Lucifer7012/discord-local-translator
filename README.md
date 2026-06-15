@@ -107,6 +107,8 @@ By default, the mode labels show the actual model names currently configured.
 
 Detailed setup steps for another computer are in [docs/HOME_PC_SETUP.md](docs/HOME_PC_SETUP.md).
 
+For machine-specific differences such as startup status, see [docs/MACHINE_NOTES.md](docs/MACHINE_NOTES.md).
+
 ## Notes
 
 - The floating popup supports mouse wheel scrolling for long translations.

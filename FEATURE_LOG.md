@@ -2,6 +2,14 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-06-15
+
+### Separate company/home machine tracking
+
+- Added `docs/MACHINE_NOTES.md` so startup state and other local setup details can be recorded per machine.
+- Recorded that the company PC currently has Windows startup enabled through a Startup shortcut.
+- Left the home PC startup state explicitly unconfirmed until that machine is configured.
+
 ## 2026-06-14
 
 ### Popup placement tuning and local startup setup

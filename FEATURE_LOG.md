@@ -4,6 +4,12 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
 ## 2026-06-15
 
+### Busy-state feedback for overlapping translations
+
+- Investigated a case where the reply translation window accepted Chinese input but produced no visible result.
+- Confirmed the root cause was the shared `self.busy` guard: auto-translation was still running, so reply translation returned early without any message.
+- Added an explicit busy-state warning so overlapping requests now explain that the previous translation is still in progress.
+
 ### Separate company/home machine tracking
 
 - Added `docs/MACHINE_NOTES.md` so startup state and other local setup details can be recorded per machine.

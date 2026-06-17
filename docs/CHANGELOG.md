@@ -11,6 +11,11 @@ Rules:
 
 ## 2026-06-15
 
+### Busy-state reply translation feedback
+
+- Added an explicit busy-state message when a new translation is triggered before the previous one finishes.
+- Fixed the confusing case where `F8` reply translation could appear to do nothing while an auto-translation was still running.
+
 ### Separate machine records
 
 - Added `docs/MACHINE_NOTES.md` to track company PC and home PC setup differences separately.

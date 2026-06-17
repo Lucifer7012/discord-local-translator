@@ -1093,9 +1093,15 @@ class TranslatorApp:
             self.reply_prompt.destroy()
             self.reply_prompt = None
 
+    def show_busy_problem(self, show_main: bool) -> None:
+        self.show_problem("上一条翻译还没完成，请稍等一下再试。", show_main)
+
     def submit_reply_prompt(self, entry: Text) -> None:
         text = entry.get("1.0", END).strip()
         if not text:
+            return
+        if self.busy:
+            self.show_busy_problem(False)
             return
         if not contains_cjk(text):
             self.show_problem("输入内容不像中文，请输入中文后再翻译。", False)
@@ -1105,6 +1111,7 @@ class TranslatorApp:
 
     def translate_selection_to_chinese(self, show_main: bool = False, source_hwnd: int = 0) -> None:
         if self.busy:
+            self.show_busy_problem(show_main)
             return
         self.last_translation_anchor = get_cursor_position()
 
@@ -1136,6 +1143,7 @@ class TranslatorApp:
         source_hwnd: int = 0,
     ) -> None:
         if self.busy:
+            self.show_busy_problem(show_main)
             return
         self.last_translation_anchor = get_cursor_position()
         target = self.resolve_reply_target()
@@ -1156,6 +1164,7 @@ class TranslatorApp:
         source_hwnd: int = 0,
     ) -> None:
         if self.busy:
+            self.show_busy_problem(show_main)
             return
         self.last_translation_anchor = get_cursor_position()
 

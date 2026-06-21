@@ -709,6 +709,7 @@ class TranslatorApp:
         self.model_mode_var = StringVar()
 
         self.status_var = StringVar()
+        self.current_job_var = StringVar(value="当前没有进行中的翻译。")
         self.detected_var = StringVar(value="尚未检测")
         self.reply_target_var = StringVar(value="自动：上次对方语言，否则 English")
         self.auto_copy_var = BooleanVar(value=True)
@@ -786,6 +787,11 @@ class TranslatorApp:
         detected.pack(fill=X, pady=(0, 8))
         ttk.Label(detected, text="最近检测语言：").pack(side=LEFT)
         ttk.Label(detected, textvariable=self.detected_var).pack(side=LEFT)
+
+        current_job = ttk.Frame(outer)
+        current_job.pack(fill=X, pady=(0, 8))
+        ttk.Label(current_job, text="当前任务：").pack(side=LEFT)
+        ttk.Label(current_job, textvariable=self.current_job_var).pack(side=LEFT, fill=X, expand=True)
 
         panes = ttk.PanedWindow(outer, orient="vertical")
         panes.pack(fill=BOTH, expand=True)
@@ -1012,6 +1018,21 @@ class TranslatorApp:
         widget.insert("1.0", value)
         widget.configure(state="normal")
 
+    def summarize_text(self, text: str, limit: int = 42) -> str:
+        single_line = " ".join(text.split())
+        if len(single_line) <= limit:
+            return single_line
+        return single_line[: limit - 1] + "…"
+
+    def set_current_job(self, summary: str) -> None:
+        self.current_job_var.set(summary or "当前没有进行中的翻译。")
+
+    def build_reply_job_summary(self, text: str, target: str) -> str:
+        return f"中文 -> {target}：{self.summarize_text(text)}"
+
+    def build_to_chinese_job_summary(self, text: str) -> str:
+        return f"外语 -> 中文：{self.summarize_text(text)}"
+
     def show_window(self) -> None:
         self.root.deiconify()
         self.root.lift()
@@ -1094,7 +1115,9 @@ class TranslatorApp:
             self.reply_prompt = None
 
     def show_busy_problem(self, show_main: bool) -> None:
-        self.show_problem("上一条翻译还没完成，请稍等一下再试。", show_main)
+        current_job = self.current_job_var.get().strip() or "当前没有进行中的翻译。"
+        self.show_problem(f"上一条翻译还没完成：{current_job}", show_main)
+        return
 
     def submit_reply_prompt(self, entry: Text) -> None:
         text = entry.get("1.0", END).strip()
@@ -1129,6 +1152,7 @@ class TranslatorApp:
             return
         self._start_worker(
             "正在翻译成中文...",
+            self.build_to_chinese_job_summary(text),
             text,
             self._worker_to_chinese,
             show_main=show_main,
@@ -1149,6 +1173,7 @@ class TranslatorApp:
         target = self.resolve_reply_target()
         self._start_worker(
             f"正在翻译成 {target}...",
+            self.build_reply_job_summary(text, target),
             text,
             self._worker_reply,
             target,
@@ -1185,6 +1210,7 @@ class TranslatorApp:
         target = self.resolve_reply_target()
         self._start_worker(
             f"正在翻译成 {target}...",
+            self.build_reply_job_summary(text, target),
             text,
             self._worker_reply,
             target,
@@ -1209,6 +1235,7 @@ class TranslatorApp:
     def _start_worker(
         self,
         status: str,
+        task_summary: str,
         text: str,
         func,
         *args,
@@ -1217,14 +1244,15 @@ class TranslatorApp:
     ) -> None:
         self.busy = True
         anchor_pos = self.last_translation_anchor
-        self.status_var.set(status)
+        self.set_current_job(task_summary)
+        self.status_var.set(f"正在翻译：{task_summary}")
         self.set_text_widget(self.original_text, text)
         self.set_text_widget(self.result_text, "")
         if show_main:
             self.show_window()
         elif not paste_result:
             self.hide_window()
-            self.floating.show("翻译中", status, duration_ms=6000, anchor_pos=anchor_pos)
+            self.floating.show("翻译中", task_summary, duration_ms=6000, anchor_pos=anchor_pos)
         else:
             self.hide_window()
 
@@ -1273,6 +1301,7 @@ class TranslatorApp:
         else:
             self.status_var.set("已翻译成中文。")
         self.busy = False
+        self.set_current_job("")
         self.floating.show(f"{source_zh} ({source_en}) -> 中文", translation, anchor_pos=anchor_pos)
         if show_main:
             self.show_window()
@@ -1299,6 +1328,7 @@ class TranslatorApp:
         else:
             self.status_var.set("已翻译成回复语言。")
         self.busy = False
+        self.set_current_job("")
         if paste_result:
             self.floating.show(
                 f"已翻译成 {target_en}",
@@ -1315,6 +1345,7 @@ class TranslatorApp:
         self.set_text_widget(self.result_text, f"翻译失败：\n{exc}")
         self.status_var.set("翻译失败。")
         self.busy = False
+        self.set_current_job("")
         self.show_window()
 
     def copy_current_result(self) -> None:

@@ -2,6 +2,13 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-06-22
+
+### Gateway switch to olapi
+
+- Switched the active translator `.env` from the old `43.166.202.16:3000` gateway to `https://olapi.olinkdata.com/v1`.
+- Updated the repository examples and setup documents so new machines will use the same gateway by default.
+
 ## 2026-06-15
 
 ### Busy-state feedback for overlapping translations

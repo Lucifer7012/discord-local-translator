@@ -9,6 +9,13 @@ Rules:
 - If current status or handoff expectations change, also update `docs/PROJECT_STATUS.md` and `docs/HANDOFF.md`.
 - Sync summary notes to `C:\Users\OgCloud\Desktop\Codex-Worklog\WORKLOG.md`.
 
+## 2026-06-22
+
+### Switch translator docs and config examples to olapi gateway
+
+- Updated the local `.env` to use `https://olapi.olinkdata.com/v1`.
+- Synced `.env.example`, `README.md`, `docs/HOME_PC_SETUP.md`, and `docs/PROJECT_STATUS.md` to the same gateway so the documented setup matches the current machine.
+
 ## 2026-06-15
 
 ### Busy-state reply translation feedback

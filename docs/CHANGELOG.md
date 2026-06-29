@@ -9,6 +9,13 @@ Rules:
 - If current status or handoff expectations change, also update `docs/PROJECT_STATUS.md` and `docs/HANDOFF.md`.
 - Sync summary notes to `C:\Users\OgCloud\Desktop\Codex-Worklog\WORKLOG.md`.
 
+## 2026-06-29
+
+### Skip numeric and random-code clipboard copies more reliably
+
+- Extended the clipboard auto-translation filter to ignore compact code-like strings in addition to pure digits and `VM` + digits.
+- Updated the README troubleshooting text to mention the new code-string skip behavior.
+
 ## 2026-06-22
 
 ### Switch translator docs and config examples to olapi gateway

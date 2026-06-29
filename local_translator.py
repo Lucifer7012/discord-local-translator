@@ -143,11 +143,37 @@ def contains_cjk(text: str) -> bool:
     return bool(re.search(r"[\u3400-\u9fff]", text))
 
 
+def is_compact_code_like_line(text: str) -> bool:
+    stripped = text.strip()
+    if not stripped or contains_cjk(stripped) or " " in stripped:
+        return False
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", stripped):
+        return False
+    if len(stripped) < 8 or len(stripped) > 32:
+        return False
+
+    uppercase_count = sum(1 for char in stripped if char.isupper())
+    lowercase_count = sum(1 for char in stripped if char.islower())
+    digit_count = sum(1 for char in stripped if char.isdigit())
+
+    # Skip invite-code-like or token-like strings such as MOCJiQUwSu.
+    if digit_count and (uppercase_count or lowercase_count):
+        return True
+    if uppercase_count >= 4 and lowercase_count >= 2:
+        return True
+    if uppercase_count >= 2 and lowercase_count >= 2 and re.search(r"[a-z][A-Z]|[A-Z][a-z].*[A-Z]", stripped):
+        return True
+    return False
+
+
 def is_nontranslatable_code_block(text: str) -> bool:
     lines = [line.strip() for line in re.split(r"[\r\n]+", text) if line.strip()]
     if not lines:
         return False
-    return all(re.fullmatch(r"(?:VM)?\d+", line, flags=re.IGNORECASE) for line in lines)
+    return all(
+        re.fullmatch(r"(?:VM)?\d+", line, flags=re.IGNORECASE) or is_compact_code_like_line(line)
+        for line in lines
+    )
 
 
 def send_key(vk: int, key_up: bool = False) -> None:

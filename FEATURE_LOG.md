@@ -2,6 +2,14 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-06-29
+
+### Clipboard filter for random code strings
+
+- Extended the auto-translation skip logic beyond pure digits and `VM` + digits.
+- Added compact code-like token filtering for copied strings such as `MOCJiQUwSu` and similar mixed-case identifiers.
+- Synced the README wording so the documented skip behavior matches the installed plugin.
+
 ## 2026-06-22
 
 ### Gateway switch to olapi

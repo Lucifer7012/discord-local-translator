@@ -9,7 +9,7 @@ Windows desktop helper for Discord chat translation. It does not modify the Disc
 - Translate your Chinese reply into the other person's language
 - Copy translated output back to the clipboard automatically
 - Show a floating translation popup near the mouse cursor
-- Skip pure numeric codes and `VM` + numeric identifiers automatically
+- Skip pure numeric codes, `VM` + numeric identifiers, and compact random-code strings automatically
 
 ## Files
 
@@ -121,4 +121,4 @@ For machine-specific differences such as startup status, see [docs/MACHINE_NOTES
 - If double-click launch does nothing, run `start_translator_debug.bat` and read the error.
 - If translation feels slow, switch to a faster model in `.env`.
 - If hotkeys do not respond, another app may be occupying the same global hotkey.
-- If the popup does not appear, make sure Discord is the foreground window and that copied text is not Chinese, pure digits, or `VM` + digits.
+- If the popup does not appear, make sure Discord is the foreground window and that copied text is not Chinese, pure digits, `VM` + digits, or compact code-like strings such as `MOCJiQUwSu`.

@@ -38,7 +38,7 @@ Then edit `.env` and fill these values:
 
 ```env
 OPENAI_API_KEY=your_api_key
-OPENAI_BASE_URL=https://olapi.olinkdata.com/v1
+OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
 OPENAI_MODEL=gpt-5.5
 ACCURATE_TRANSLATION_MODEL=gpt-5.5
 FAST_TRANSLATION_MODEL=gpt-5.4-mini

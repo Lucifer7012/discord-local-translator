@@ -1,6 +1,6 @@
 # Project Status
 
-Updated: 2026-06-11
+Updated: 2026-07-02
 
 Project: Discord Local Translator
 
@@ -45,7 +45,7 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 ## Current recommended local config
 
 ```env
-OPENAI_BASE_URL=https://olapi.olinkdata.com/v1
+OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
 OPENAI_MODEL=gpt-5.5
 ACCURATE_TRANSLATION_MODEL=gpt-5.5
 FAST_TRANSLATION_MODEL=gpt-5.4-mini

@@ -2,6 +2,13 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-07-02
+
+### Gateway switch from olapi to apilink
+
+- Switched the active translator `.env` base URL from `https://olapi.olinkdata.com/v1` to `https://apilink.olinkdata.com/v1`.
+- Synced `.env.example`, `README.md`, `docs/HOME_PC_SETUP.md`, and `docs/PROJECT_STATUS.md` so future machines use the same endpoint by default.
+
 ## 2026-06-29
 
 ### Clipboard filter for random code strings

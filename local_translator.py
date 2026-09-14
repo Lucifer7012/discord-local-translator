@@ -20,7 +20,7 @@ LEGACY_ENV_PATH = Path(r"C:\Users\OgCloud\Documents\chaoshan-translator\.env")
 MODEL_MODE_ACCURATE = "accurate"
 MODEL_MODE_FAST = "fast"
 DEFAULT_ACCURATE_MODEL = "gpt-5.5"
-DEFAULT_FAST_MODEL = "gpt-5.4-mini"
+DEFAULT_FAST_MODEL = "gpt-5.6-sol"
 
 MOD_ALT = 0x0001
 MOD_CONTROL = 0x0002

@@ -43,8 +43,8 @@ OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-5.5
 ACCURATE_TRANSLATION_MODEL=gpt-5.5
-FAST_TRANSLATION_MODEL=gpt-5.4-mini
-TRANSLATION_MODEL_MODE=accurate
+FAST_TRANSLATION_MODEL=gpt-5.6-sol
+TRANSLATION_MODEL_MODE=fast
 ```
 
 Optional:
@@ -62,8 +62,8 @@ OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
 OPENAI_MODEL=gpt-5.5
 ACCURATE_TRANSLATION_MODEL=gpt-5.5
-FAST_TRANSLATION_MODEL=gpt-5.4-mini
-TRANSLATION_MODEL_MODE=accurate
+FAST_TRANSLATION_MODEL=gpt-5.6-sol
+TRANSLATION_MODEL_MODE=fast
 ```
 
 The app will use:
@@ -84,7 +84,7 @@ The app will use:
 The main window now supports two built-in translation modes:
 
 - `准确模式`: prefers translation quality and uses the accurate model
-- `极速模式`: prefers lower latency and uses the fast model
+- `极速模式`: prefers lower latency and uses `gpt-5.6-sol` by default
 
 By default, the mode labels show the actual model names currently configured.
 

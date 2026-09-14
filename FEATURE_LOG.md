@@ -2,6 +2,14 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-09-14
+
+### Fast mode is now the startup default
+
+- Changed the startup translation mode from `accurate` to `fast`.
+- Replaced the fast-mode model `gpt-5.4-mini` with `gpt-5.6-sol` in the runtime config and code fallback.
+- Updated setup examples and verified a live translation request through the configured gateway.
+
 ## 2026-07-02
 
 ### Gateway switch from olapi to apilink

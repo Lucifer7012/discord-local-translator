@@ -48,8 +48,8 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
 OPENAI_MODEL=gpt-5.5
 ACCURATE_TRANSLATION_MODEL=gpt-5.5
-FAST_TRANSLATION_MODEL=gpt-5.4-mini
-TRANSLATION_MODEL_MODE=accurate
+FAST_TRANSLATION_MODEL=gpt-5.6-sol
+TRANSLATION_MODEL_MODE=fast
 ```
 
 ## Important files

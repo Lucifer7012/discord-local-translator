@@ -9,6 +9,14 @@ Rules:
 - If current status or handoff expectations change, also update `docs/PROJECT_STATUS.md` and `docs/HANDOFF.md`.
 - Sync summary notes to `C:\Users\OgCloud\Desktop\Codex-Worklog\WORKLOG.md`.
 
+## 2026-09-14
+
+### Default to fast mode with GPT-5.6 Sol
+
+- Changed the default startup mode to `极速模式`.
+- Replaced `gpt-5.4-mini` with `gpt-5.6-sol` for fast-mode translations.
+- Updated the code fallback and configuration examples to use the new default.
+
 ## 2026-07-02
 
 ### Switch translator gateway to apilink

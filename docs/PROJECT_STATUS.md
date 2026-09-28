@@ -28,6 +28,7 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 - Main control window for status and manual actions
 - Direct translation from text entered in the original-text box
 - Pause/resume control for clipboard-triggered auto-translation
+- Persistent always-on-top toggle for the main window
 - Automatic skip rules for:
   - Chinese content
   - Pure digits

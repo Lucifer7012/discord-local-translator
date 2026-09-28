@@ -11,6 +11,10 @@ Rules:
 
 ## 2026-09-28
 
+### Persistent always-on-top window control
+
+- Added a toggle button to keep the main translator window above other applications until manually disabled.
+
 ### Direct translation, pause control, and GPT-6 Sol accurate mode
 
 - Added direct translation for text entered in the original-text box.

@@ -81,6 +81,8 @@ The app will use:
 
 The main window also has `翻译原文` for translating text entered directly in the original-text box, and `暂停自动翻译` / `恢复自动翻译` for temporarily stopping clipboard-triggered translations while you copy Discord content.
 
+Use `窗口置顶` to keep the main window above other applications; click it again to cancel.
+
 ## Translation Modes
 
 The main window now supports two built-in translation modes:

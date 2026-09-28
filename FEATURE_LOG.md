@@ -4,6 +4,11 @@ This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
 ## 2026-09-28
 
+### Persistent always-on-top window control
+
+- Added a `窗口置顶` / `取消置顶` button to keep the main translator window above other applications until manually disabled.
+- Preserved the existing temporary focus behavior when persistent topmost mode is off.
+
 ### Direct translation and clipboard auto-translation pause
 
 - Added a `翻译原文` action for translating text entered directly in the original-text box.

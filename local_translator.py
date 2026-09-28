@@ -747,6 +747,8 @@ class TranslatorApp:
         self.auto_clipboard_var = BooleanVar(value=True)
         self.auto_translation_paused = False
         self.pause_button_text = StringVar(value="暂停自动翻译")
+        self.always_on_top = False
+        self.topmost_button_text = StringVar(value="窗口置顶")
 
         self._build_ui()
         self.model_mode_var.set(self.format_model_mode_label(self.client.model_mode))
@@ -759,17 +761,24 @@ class TranslatorApp:
     def _build_ui(self) -> None:
         outer = ttk.Frame(self.root, padding=12)
         outer.pack(fill=BOTH, expand=True)
+        outer.columnconfigure(0, weight=1)
+        outer.rowconfigure(5, weight=1)
 
         header = ttk.Frame(outer)
-        header.pack(fill=X)
+        header.grid(row=0, column=0, sticky="ew")
 
         ttk.Label(header, text=APP_TITLE, font=("Microsoft YaHei UI", 14, "bold")).pack(
             side=LEFT
         )
+        ttk.Button(
+            header,
+            textvariable=self.topmost_button_text,
+            command=self.toggle_always_on_top,
+        ).pack(side=RIGHT, padx=(8, 0))
         ttk.Button(header, text="隐藏窗口", command=self.hide_window).pack(side=RIGHT)
 
         config = ttk.Frame(outer)
-        config.pack(fill=X, pady=(10, 6))
+        config.grid(row=1, column=0, sticky="ew", pady=(10, 6))
         ttk.Label(config, text="回复目标：").pack(side=LEFT)
         target_box = ttk.Combobox(
             config,
@@ -808,38 +817,42 @@ class TranslatorApp:
         ttk.Checkbutton(config, text="复制外语后自动翻译", variable=self.auto_clipboard_var).pack(
             side=LEFT, padx=(12, 0)
         )
+
         hotkeys = ttk.Frame(outer)
-        hotkeys.pack(fill=X, pady=(0, 8))
+        hotkeys.grid(row=2, column=0, sticky="ew", pady=(0, 8))
         ttk.Label(hotkeys, text="Ctrl+C：复制外语后自动翻译").pack(side=LEFT)
         ttk.Label(hotkeys, text="    F8：弹出中文回复框").pack(
             side=LEFT
         )
 
         detected = ttk.Frame(outer)
-        detected.pack(fill=X, pady=(0, 8))
+        detected.grid(row=3, column=0, sticky="ew", pady=(0, 8))
         ttk.Label(detected, text="最近检测语言：").pack(side=LEFT)
         ttk.Label(detected, textvariable=self.detected_var).pack(side=LEFT)
 
         current_job = ttk.Frame(outer)
-        current_job.pack(fill=X, pady=(0, 8))
+        current_job.grid(row=4, column=0, sticky="ew", pady=(0, 8))
         ttk.Label(current_job, text="当前任务：").pack(side=LEFT)
         ttk.Label(current_job, textvariable=self.current_job_var).pack(side=LEFT, fill=X, expand=True)
 
-        panes = ttk.PanedWindow(outer, orient="vertical")
-        panes.pack(fill=BOTH, expand=True)
+        text_area = ttk.Frame(outer)
+        text_area.grid(row=5, column=0, sticky="nsew")
+        text_area.columnconfigure(0, weight=1)
+        text_area.rowconfigure(0, weight=1)
+        text_area.rowconfigure(1, weight=2)
 
-        original_frame = ttk.Labelframe(panes, text="原文")
-        self.original_text = Text(original_frame, wrap="word", height=8, undo=False)
+        original_frame = ttk.Labelframe(text_area, text="原文")
+        original_frame.grid(row=0, column=0, sticky="nsew", pady=(0, 6))
+        self.original_text = Text(original_frame, wrap="word", height=1, undo=False)
         self.original_text.pack(fill=BOTH, expand=True, padx=8, pady=8)
-        panes.add(original_frame, weight=1)
 
-        result_frame = ttk.Labelframe(panes, text="译文")
-        self.result_text = Text(result_frame, wrap="word", height=10, undo=False)
+        result_frame = ttk.Labelframe(text_area, text="译文")
+        result_frame.grid(row=1, column=0, sticky="nsew")
+        self.result_text = Text(result_frame, wrap="word", height=1, undo=False)
         self.result_text.pack(fill=BOTH, expand=True, padx=8, pady=8)
-        panes.add(result_frame, weight=2)
 
         actions = ttk.Frame(outer)
-        actions.pack(fill=X, pady=(10, 6))
+        actions.grid(row=6, column=0, sticky="ew", pady=(10, 6))
         ttk.Button(
             actions,
             text="翻译原文",
@@ -864,7 +877,7 @@ class TranslatorApp:
             command=self.toggle_auto_translation_pause,
         ).pack(side=LEFT, padx=(8, 0))
 
-        ttk.Label(outer, textvariable=self.status_var).pack(fill=X, side=TOP)
+        ttk.Label(outer, textvariable=self.status_var).grid(row=7, column=0, sticky="ew")
 
     def _set_initial_status(self) -> None:
         if self.client.configured:
@@ -901,6 +914,17 @@ class TranslatorApp:
         else:
             self.pause_button_text.set("暂停自动翻译")
             self.status_var.set("已恢复剪贴板自动翻译。")
+
+    def toggle_always_on_top(self) -> None:
+        self.always_on_top = not self.always_on_top
+        self.root.attributes("-topmost", self.always_on_top)
+        if self.always_on_top:
+            self.topmost_button_text.set("取消置顶")
+            self.root.lift()
+            self.status_var.set("窗口已置顶，不会被其他软件窗口覆盖。")
+        else:
+            self.topmost_button_text.set("窗口置顶")
+            self.status_var.set("已取消窗口置顶。")
 
     def _start_hotkey_listener(self) -> None:
         self.hotkey_listener = HotkeyListener(self.hotkey_events)
@@ -1092,8 +1116,9 @@ class TranslatorApp:
     def show_window(self) -> None:
         self.root.deiconify()
         self.root.lift()
-        self.root.attributes("-topmost", True)
-        self.root.after(350, lambda: self.root.attributes("-topmost", False))
+        self.root.attributes("-topmost", self.always_on_top)
+        if not self.always_on_top:
+            self.root.after(350, lambda: self.root.attributes("-topmost", self.always_on_top))
 
     def hide_window(self) -> None:
         self.root.withdraw()

@@ -1,6 +1,6 @@
 # Discord Local Translator
 
-> 中文版本见本文末尾。
+> [中文版本见本文末尾](#中文版本)。
 
 Windows desktop helper for Discord chat translation. It does not modify the Discord client itself. It watches copied text, translates foreign-language messages into Simplified Chinese, and can translate your Chinese reply back into the target language.
 

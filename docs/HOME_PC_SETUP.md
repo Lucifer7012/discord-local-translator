@@ -1,6 +1,6 @@
 # Home PC Setup
 
-> 中文版本见本文末尾。
+> [中文版本见本文末尾](#中文版本)。
 
 Use this guide to run the Discord Local Translator on another Windows computer.
 

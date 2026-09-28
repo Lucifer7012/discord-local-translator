@@ -1,6 +1,6 @@
 # Changelog
 
-> 中文版本见本文末尾。
+> [中文版本见本文末尾](#中文版本)。
 
 This file records project-level change summaries.
 

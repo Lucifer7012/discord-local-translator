@@ -1,6 +1,6 @@
 # Handoff
 
-> 中文版本见本文末尾。
+> [中文版本见本文末尾](#中文版本)。
 
 This file is the quick resume entry for future Codex sessions or another computer.
 

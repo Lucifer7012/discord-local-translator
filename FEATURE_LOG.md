@@ -1,6 +1,6 @@
 # Feature Log
 
-> 中文版本见本文末尾。
+> [中文版本见本文末尾](#中文版本)。
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 

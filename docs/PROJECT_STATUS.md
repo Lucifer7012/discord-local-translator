@@ -1,6 +1,6 @@
 # Project Status
 
-Updated: 2026-07-02
+Updated: 2026-09-28
 
 Project: Discord Local Translator
 
@@ -26,6 +26,8 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 - Floating popup with scroll support for long content
 - Popup title dragging for repositioning
 - Main control window for status and manual actions
+- Direct translation from text entered in the original-text box
+- Pause/resume control for clipboard-triggered auto-translation
 - Automatic skip rules for:
   - Chinese content
   - Pure digits
@@ -46,8 +48,8 @@ This is a Windows desktop helper for Discord. It helps the user quickly translat
 
 ```env
 OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
-OPENAI_MODEL=gpt-5.5
-ACCURATE_TRANSLATION_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-6-sol
+ACCURATE_TRANSLATION_MODEL=gpt-6-sol
 FAST_TRANSLATION_MODEL=gpt-5.6-sol
 TRANSLATION_MODEL_MODE=fast
 ```

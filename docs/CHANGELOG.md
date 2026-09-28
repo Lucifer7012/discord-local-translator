@@ -9,6 +9,14 @@ Rules:
 - If current status or handoff expectations change, also update `docs/PROJECT_STATUS.md` and `docs/HANDOFF.md`.
 - Sync summary notes to `C:\Users\OgCloud\Desktop\Codex-Worklog\WORKLOG.md`.
 
+## 2026-09-28
+
+### Direct translation, pause control, and GPT-6 Sol accurate mode
+
+- Added direct translation for text entered in the original-text box.
+- Added pause/resume control for clipboard-triggered automatic translation.
+- Changed accurate mode to `gpt-6-sol` while keeping fast mode on `gpt-5.6-sol`.
+
 ## 2026-09-14
 
 ### Default to fast mode with GPT-5.6 Sol

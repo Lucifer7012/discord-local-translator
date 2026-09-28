@@ -19,7 +19,7 @@ DEFAULT_ENV_PATH = SCRIPT_DIR / ".env"
 LEGACY_ENV_PATH = Path(r"C:\Users\OgCloud\Documents\chaoshan-translator\.env")
 MODEL_MODE_ACCURATE = "accurate"
 MODEL_MODE_FAST = "fast"
-DEFAULT_ACCURATE_MODEL = "gpt-5.5"
+DEFAULT_ACCURATE_MODEL = "gpt-6-sol"
 DEFAULT_FAST_MODEL = "gpt-5.6-sol"
 
 MOD_ALT = 0x0001
@@ -745,6 +745,8 @@ class TranslatorApp:
         self.reply_target_var = StringVar(value="自动：上次对方语言，否则 English")
         self.auto_copy_var = BooleanVar(value=True)
         self.auto_clipboard_var = BooleanVar(value=True)
+        self.auto_translation_paused = False
+        self.pause_button_text = StringVar(value="暂停自动翻译")
 
         self._build_ui()
         self.model_mode_var.set(self.format_model_mode_label(self.client.model_mode))
@@ -806,7 +808,6 @@ class TranslatorApp:
         ttk.Checkbutton(config, text="复制外语后自动翻译", variable=self.auto_clipboard_var).pack(
             side=LEFT, padx=(12, 0)
         )
-
         hotkeys = ttk.Frame(outer)
         hotkeys.pack(fill=X, pady=(0, 8))
         ttk.Label(hotkeys, text="Ctrl+C：复制外语后自动翻译").pack(side=LEFT)
@@ -841,9 +842,14 @@ class TranslatorApp:
         actions.pack(fill=X, pady=(10, 6))
         ttk.Button(
             actions,
+            text="翻译原文",
+            command=lambda: self.translate_original_text(show_main=True),
+        ).pack(side=LEFT)
+        ttk.Button(
+            actions,
             text="剪贴板/选中文本 -> 中文",
             command=lambda: self.translate_selection_to_chinese(show_main=True),
-        ).pack(side=LEFT)
+        ).pack(side=LEFT, padx=(8, 0))
         ttk.Button(
             actions,
             text="中文 -> 回复语言",
@@ -852,6 +858,11 @@ class TranslatorApp:
         ttk.Button(actions, text="复制译文", command=self.copy_current_result).pack(
             side=LEFT, padx=(8, 0)
         )
+        ttk.Button(
+            actions,
+            textvariable=self.pause_button_text,
+            command=self.toggle_auto_translation_pause,
+        ).pack(side=LEFT, padx=(8, 0))
 
         ttk.Label(outer, textvariable=self.status_var).pack(fill=X, side=TOP)
 
@@ -882,6 +893,15 @@ class TranslatorApp:
         if self.client.configured:
             self.status_var.set(f"已切换翻译模式，当前模型：{self.client.model}")
 
+    def toggle_auto_translation_pause(self) -> None:
+        self.auto_translation_paused = not self.auto_translation_paused
+        if self.auto_translation_paused:
+            self.pause_button_text.set("恢复自动翻译")
+            self.status_var.set("已暂停剪贴板自动翻译；手动翻译和 F8 回复翻译仍可用。")
+        else:
+            self.pause_button_text.set("暂停自动翻译")
+            self.status_var.set("已恢复剪贴板自动翻译。")
+
     def _start_hotkey_listener(self) -> None:
         self.hotkey_listener = HotkeyListener(self.hotkey_events)
         self.hotkey_listener.start()
@@ -906,7 +926,12 @@ class TranslatorApp:
         current_sequence = int(user32.GetClipboardSequenceNumber())
         if current_sequence != self.last_seen_clipboard_sequence:
             self.last_seen_clipboard_sequence = current_sequence
-            if self.auto_clipboard_var.get() and not self.busy and is_discord_foreground():
+            if (
+                self.auto_clipboard_var.get()
+                and not self.auto_translation_paused
+                and not self.busy
+                and is_discord_foreground()
+            ):
                 text = self.normalize_input_text(self.read_clipboard())
                 within_repeat_cooldown = (
                     text == self.last_auto_clipboard_text
@@ -1176,6 +1201,19 @@ class TranslatorApp:
             self.show_problem("没有拿到消息。请先选中 Discord 消息并按 Ctrl+C，再按 Ctrl+Alt+T。", show_main)
             return
 
+        self.translate_text_to_chinese(text, show_main)
+
+    def translate_original_text(self, show_main: bool = True) -> None:
+        if self.busy:
+            self.show_busy_problem(show_main)
+            return
+
+        text = self.normalize_input_text(self.original_text.get("1.0", END))
+        if not text:
+            self.show_problem("请先在原文框中输入或粘贴要翻译的文本。", show_main)
+            return
+
+        self.last_translation_anchor = get_cursor_position()
         self.translate_text_to_chinese(text, show_main)
 
     def translate_text_to_chinese(self, text: str, show_main: bool = False) -> None:

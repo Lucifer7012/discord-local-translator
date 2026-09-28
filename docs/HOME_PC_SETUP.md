@@ -39,8 +39,8 @@ Then edit `.env` and fill these values:
 ```env
 OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
-OPENAI_MODEL=gpt-5.5
-ACCURATE_TRANSLATION_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-6-sol
+ACCURATE_TRANSLATION_MODEL=gpt-6-sol
 FAST_TRANSLATION_MODEL=gpt-5.6-sol
 TRANSLATION_MODEL_MODE=fast
 ```
@@ -70,6 +70,7 @@ Debug mode if normal launch does not work:
 - Select a foreign-language message and press `Ctrl+C`
 - Press `F8` to open the Chinese reply box
 - Press `Ctrl+Alt+O` to show or hide the main window
+- Use `翻译原文` to translate text entered in the main window, and `暂停自动翻译` when copying Discord text without triggering automatic translation.
 
 ## 6. Optional auto-start
 

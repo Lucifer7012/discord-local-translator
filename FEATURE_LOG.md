@@ -2,6 +2,14 @@
 
 This file keeps a more detailed working log than `docs/CHANGELOG.md`.
 
+## 2026-09-28
+
+### Direct translation and clipboard auto-translation pause
+
+- Added a `翻译原文` action for translating text entered directly in the original-text box.
+- Added `暂停自动翻译` / `恢复自动翻译` to pause clipboard-triggered translations while copying Discord content; manual translation and F8 reply translation remain available.
+- Changed the accurate-mode model from `gpt-5.5` to the requested `gpt-6-sol`.
+
 ## 2026-09-14
 
 ### Fast mode is now the startup default

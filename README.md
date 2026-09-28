@@ -41,8 +41,8 @@ Create a local `.env` file in the project root:
 ```env
 OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-5.5
-ACCURATE_TRANSLATION_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-6-sol
+ACCURATE_TRANSLATION_MODEL=gpt-6-sol
 FAST_TRANSLATION_MODEL=gpt-5.6-sol
 TRANSLATION_MODEL_MODE=fast
 ```
@@ -52,7 +52,7 @@ Optional:
 ```env
 AI_API_KEY=your_api_key
 AI_API_BASE_URL=https://api.openai.com/v1
-AI_MODEL=gpt-5.5
+AI_MODEL=gpt-6-sol
 ```
 
 Example for the current local custom gateway setup:
@@ -60,8 +60,8 @@ Example for the current local custom gateway setup:
 ```env
 OPENAI_API_KEY=your_api_key
 OPENAI_BASE_URL=https://apilink.olinkdata.com/v1
-OPENAI_MODEL=gpt-5.5
-ACCURATE_TRANSLATION_MODEL=gpt-5.5
+OPENAI_MODEL=gpt-6-sol
+ACCURATE_TRANSLATION_MODEL=gpt-6-sol
 FAST_TRANSLATION_MODEL=gpt-5.6-sol
 TRANSLATION_MODEL_MODE=fast
 ```
@@ -79,11 +79,13 @@ The app will use:
 - `F8`: open the reply box, translate your Chinese reply, and prepare it for Discord
 - `Ctrl+Alt+O`: show or hide the main window
 
+The main window also has `翻译原文` for translating text entered directly in the original-text box, and `暂停自动翻译` / `恢复自动翻译` for temporarily stopping clipboard-triggered translations while you copy Discord content.
+
 ## Translation Modes
 
 The main window now supports two built-in translation modes:
 
-- `准确模式`: prefers translation quality and uses the accurate model
+- `准确模式`: prefers translation quality and uses `gpt-6-sol` by default
 - `极速模式`: prefers lower latency and uses `gpt-5.6-sol` by default
 
 By default, the mode labels show the actual model names currently configured.
